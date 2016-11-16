@@ -1,13 +1,15 @@
 # InformaticaCloudClient
-Command line tool to start and monitor a task or workflow on Informatica Cloud
+Command line tool to start and monitor a task or workflow on Informatica Cloud.
 
-Keywords (Informatica IOD Task)
+Keywords (Informatica, Cloud REST API, IOD, Task)
+
+This tool can be used where you want to invoke or monitor an IOD task from on-premises. It gives a simple command line interface that saves developing code to call the Informatica Cloud REST API.
 
 
-Synopsis
+Usage
 ========
+ <br><br> > InformaticaCloudClient -t MyTaskName -e MyTaskType --run --wait -o MyOutputFileName.csv
 
-> InformaticaCloudClient -t MyTaskName -e MyTaskType --run --wait -o MyOutputFileName.csv
 
 -t MyTaskName   (specify the name of the task or workflow)
 
