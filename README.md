@@ -16,12 +16,15 @@ Usage
 -e MyTaskType   (specify the type of the task or workflow)
 
 --stop          (if specified stops the task if it is running)
+
 --run           (if specified starts the task)
+
 --wait          (if specified waits for the task to complete before exiting)
 
 -o MyOutputFileName.csv  (if specified outputs the activity monitor and activity log for the task or workflow to the specified file)
 
 -u UserName     (if specified change the UserName stored in InformaticaCloudClient.exe.config)
+
 -p Password     (if specified change the password stored encrypted in InformaticaCloudClient.exe.config)
 
 UserName and Password must be specified once in order to save them in the config file.
