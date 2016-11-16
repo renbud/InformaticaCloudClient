@@ -34,6 +34,9 @@ PCS = PowerCenter task.")]
         [Option('w', "wait", Required = false, Default = false, HelpText = "Wait for the specified task to finish before returning.")]
         public bool DoWait { get; set; }
 
+        [Option('s', "stop", Required = false, Default = false, HelpText = "Stop the specified task.")]
+        public bool DoStop { get; set; }
+
         [Option('o', "output", Required = false, Default = "x", HelpText = "File name to send log to")]
         public string OutputTo { get; set; }
 

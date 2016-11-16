@@ -65,9 +65,10 @@ namespace InformaticaCloudClient
             }
         }
 
-        public static async Task<bool> DoStartTask(IodClientSession session, string taskId, string taskType)
+
+        public static async Task<bool> DoLogout(IodClientSession session)
         {
-            const string MethodUrl = "api/v2/job";
+            const string MethodUrl = "api/v2/user/logout";
             const string ContentType = "application/json"; // use json both directions
 
             using (var client = new HttpClient())
@@ -78,13 +79,12 @@ namespace InformaticaCloudClient
 
                 var requestContent = new
                 {
-                    @type = "job",
-                    taskId = taskId,
-                    taskType = taskType
+                    @type = "logout"
                 };
                 var requestMessage = MakeRequestMessage(session, requestContent, ContentType, MethodUrl);
 
                 HttpResponseMessage resp = await client.SendAsync(requestMessage);
+
                 if (!resp.IsSuccessStatusCode)
                 {
                     throw new HttpResponseException(resp);
@@ -127,6 +127,48 @@ namespace InformaticaCloudClient
                 }
             }
         }
+
+        public static async Task<bool> DoStopTask(IodClientSession session, string taskId, string taskType)
+        {
+            const string MethodUrl = "api/v2/job/stop";
+            bool ok =  await DoStartOrStopTask(session, taskId, taskType, MethodUrl);
+            System.Threading.Thread.Sleep(15000);
+            return ok;
+        }
+
+        public static async Task<bool> DoStartTask(IodClientSession session, string taskId, string taskType)
+        {
+            const string MethodUrl = "api/v2/job";
+            return await DoStartOrStopTask(session, taskId, taskType, MethodUrl);
+        }
+
+        private static async Task<bool> DoStartOrStopTask(IodClientSession session, string taskId, string taskType, string methodUrl)
+        {
+            const string ContentType = "application/json"; // use json both directions
+
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(session.serverUrl);
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(ContentType));
+
+                var requestContent = new
+                {
+                    @type = "job",
+                    taskId = taskId,
+                    taskType = taskType
+                };
+                var requestMessage = MakeRequestMessage(session, requestContent, ContentType, methodUrl);
+
+                HttpResponseMessage resp = await client.SendAsync(requestMessage);
+                if (!resp.IsSuccessStatusCode)
+                {
+                    throw new HttpResponseException(resp);
+                }
+                return resp.IsSuccessStatusCode;
+            }
+        }
+
 
         public static async Task<bool> DoWaitTask(IodClientSession session, string taskId, string taskType)
         {
@@ -198,6 +240,81 @@ namespace InformaticaCloudClient
                 else
                 {
                     throw new HttpResponseException(resp);
+                }
+            }
+        }
+
+        public static async Task<IEnumerable<ActivityMonitorEntry>> DoGetActivityMonitor(IodClientSession session, string taskId, string taskType)
+        {
+            const string MethodUrl = "api/v2/activity/activityMonitor?details=true";
+            const string ContentType = "application/json"; // use json both directions
+
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(session.serverUrl);
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(ContentType));
+
+                var requestMessage = MakeRequestMessage(
+                    session,
+                    null,
+                    ContentType,
+                    MethodUrl
+                    );
+
+                HttpResponseMessage resp = await client.SendAsync(requestMessage);
+                if (resp.IsSuccessStatusCode)
+                {
+                    string content = await resp.Content.ReadAsStringAsync();
+                    var contentObject = JsonConvert.DeserializeObject<List<ActivityMonitorEntry>>(content);
+                    return contentObject.Where(entry =>
+                        entry.taskId.Equals(taskId, StringComparison.InvariantCultureIgnoreCase) &&
+                        entry.type.Equals(taskType, StringComparison.InvariantCultureIgnoreCase));
+                }
+                else
+                {
+                    throw new HttpResponseException(resp);
+                }
+            }
+        }
+
+        /// <summary>
+        /// This is supposed to return the error log as a stream
+        /// but it does not work unforunately whenever I tested it results in 404 not found
+        /// </summary>
+        /// <param name="session"></param>
+        /// <param name="logId"></param>
+        /// <returns></returns>
+        [System.Obsolete("Does not work")]
+        public static async Task<System.IO.Stream> DoGetErrorLog(IodClientSession session, string logId)
+        {
+            const string MethodUrl = "api/v2/activity/errorLog/id?{id}";
+            const string ContentTypeAccept = "application/json"; 
+            const string ContentTypeRequest = "application/json";
+
+            using (var client = new HttpClient())
+            {
+                client.BaseAddress = new Uri(session.serverUrl);
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(ContentTypeAccept));
+
+                var requestMessage = MakeRequestMessage(
+                    session,
+                    null,
+                    ContentTypeRequest,
+                    MethodUrl.Replace("{id}", logId)
+                    );
+
+                HttpResponseMessage resp = await client.SendAsync(requestMessage);
+                if (resp.IsSuccessStatusCode)
+                {
+
+                    var content = await resp.Content.ReadAsStreamAsync();
+                    return content;
+                }
+                else
+                {
+                    return null;
                 }
             }
         }

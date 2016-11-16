@@ -107,7 +107,6 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="InformaticaCloudClientKey.pfx" />
-    <None Include="InformaticaCloudClient_TemporaryKey.pfx" />
     <None Include="packages.config" />
     <None Include="Properties\app.manifest" />
   </ItemGroup>

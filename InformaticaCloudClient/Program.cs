@@ -38,6 +38,11 @@ namespace InformaticaCloudClient
                 {
                     string taskId = IodClientMethods.DoGetTaskId(session, opts.TaskName, opts.TaskType).Result;
 
+                    if (opts.DoStop)
+                    {
+                        var resp = IodClientMethods.DoStopTask(session, taskId, opts.TaskType).Result;
+                    }
+
                     if (opts.DoRun)
                     {
                         var resp = IodClientMethods.DoStartTask(session, taskId, opts.TaskType).Result;
@@ -53,10 +58,12 @@ namespace InformaticaCloudClient
 
                         var logEntries = IodClientMethods.DoGetActivityLog(session, taskId).Result;
                         var cnt = logEntries.Count();
-                        var monitorEntries = IodClientMethods.DoGetActivityMonitor(session).Result;
+                        var monitorEntries = IodClientMethods.DoGetActivityMonitor(session, taskId, opts.TaskType).Result;
                         var report = LogReport.MakeLogReport(monitorEntries, logEntries);
-                        FileHelper.MakeCsv(report, opts.OutputTo);
+                        FileHelper.MakeLogFileCsv(report, opts.OutputTo, opts.TaskName);
                     }
+
+                    IodClientMethods.DoLogout(session).Wait();
 
 
                 }
