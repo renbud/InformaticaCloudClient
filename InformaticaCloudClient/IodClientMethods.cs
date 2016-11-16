@@ -131,8 +131,15 @@ namespace InformaticaCloudClient
         public static async Task<bool> DoStopTask(IodClientSession session, string taskId, string taskType)
         {
             const string MethodUrl = "api/v2/job/stop";
-            bool ok =  await DoStartOrStopTask(session, taskId, taskType, MethodUrl);
-            System.Threading.Thread.Sleep(15000);
+            bool ok = false;
+            try {
+                ok =  await DoStartOrStopTask(session, taskId, taskType, MethodUrl);
+            }
+            catch (HttpResponseException)
+            {
+                // ignore this error because probably 403 forbidden thrown because the task was not running
+            }
+            System.Threading.Thread.Sleep(15000); // wait to give the task a chance to really stop
             return ok;
         }
 
