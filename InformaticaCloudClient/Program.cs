@@ -77,7 +77,8 @@ namespace InformaticaCloudClient
             finally
             {
                 #if DEBUG
-                System.Diagnostics.Debugger.Break();
+                if (System.Diagnostics.Debugger.IsAttached)
+                    System.Diagnostics.Debugger.Break();
                 #endif
             }
         }
