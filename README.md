@@ -1,9 +1,9 @@
 # InformaticaCloudClient
 Command line tool to start, stop and monitor a task or workflow on Informatica Cloud.
 
-Keywords (Informatica, Cloud, REST API, IOD, Task)
+Keywords (Informatica, Cloud, REST API, IOD, Task, Scripting)
 
-This tool can be used where you want to invoke or monitor an IOD task from on-premises. It gives a simple command line interface that saves developing code to call the Informatica Cloud REST API.
+This tool can be used where you want to invoke or monitor an IOD task by scripting. It gives a simple command line interface that saves developing code to call the Informatica Cloud REST API.
 
 
 Usage
